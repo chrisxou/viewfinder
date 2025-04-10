@@ -1,6 +1,8 @@
 # viewfinder
 Viewfinder is a minimal, responsive photography portfolio built with Next.js. Future updates will integrate Supabase for dynamic photo hosting.
 
+https://viewfinder-beryl.vercel.app/
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
