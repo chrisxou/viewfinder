@@ -1,26 +1,80 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #000;
+  color: #fff;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* ── Image track (drag / scroll-wheel parallax gallery) ── */
+
+#image-track {
+  display: flex;
+  gap: 4vmin;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(0%, -50%);
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: grab;
+}
+
+#image-track:active {
+  cursor: grabbing;
+}
+
+#image-track > .image {
+  width: 40vmin;
+  height: 56vmin;
+  object-fit: cover;
+  object-position: 100% center;
+  flex-shrink: 0;
+}
+
+/* ── Desktop portrait mode: vertical column ─────────────────────────────────
+   JS switches to pixel-based Y scroll when orientation === "portrait".       */
+@media (min-width: 769px) {
+  #image-track.portrait {
+    flex-direction: column;
+    top: 64px;
+    transform: translate(-50%, 0px);
+  }
+
+  #image-track.portrait > .image {
+    object-position: center 100%; /* pan top↔bottom instead of left↔right */
+  }
+}
+
+/* ── Mobile — vertical column layout ────────────────────────────────────────
+   Track starts just below the header (64px). JS uses pixel-based Y scroll
+   with a computed maxPx so the last image always ends at the bottom edge.   */
+@media (max-width: 768px) {
+  #image-track {
+    flex-direction: column;
+    gap: 4vw;
+    top: 150px;
+    transform: translate(-50%, 0px);
+  }
+
+  /* Default: landscape — 4:3 */
+  #image-track > .image {
+    top: 50px;
+    width: 85vw;
+    height: 30vw; /* 90 × 3/4 ≈ 68 */
+    gap: 10vw;
+    object-position: center 100%;
+  }
+
+  /* Portrait mode — 3:4 */
+  #image-track.portrait > .image {
+    width: 85vw;
+    height: 30vw; 
+    gap: 10vw;
+  }
 }
