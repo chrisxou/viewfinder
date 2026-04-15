@@ -11,22 +11,57 @@ body {
   margin: 0;
 }
 
+/* ── Logo ── */
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: calc(22px * var(--logo-scale));
+}
+
+.logo__sep {
+  display: block;
+  width: 1px;
+  height: calc(36px * var(--logo-scale));
+  background: var(--logo-sep-bg);
+  flex-shrink: 0;
+}
+
+.logo__text {
+  display: flex;
+  flex-direction: column;
+  gap: calc(5px * var(--logo-scale));
+}
+
+.logo__name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: calc(34px * var(--logo-scale));
+  font-weight: 200;
+  letter-spacing: 0.36em;
+  color: var(--logo-color);
+  line-height: 1;
+}
+
+.logo__sub {
+  font-family: 'DM Sans', sans-serif;
+  font-size: calc(9px * var(--logo-scale));
+  font-weight: 200;
+  letter-spacing: 0.32em;
+  color: var(--logo-color-muted);
+}
+
 /* ── Image track (drag / scroll-wheel parallax gallery) ── */
 
 #image-track {
   display: flex;
   gap: 4vmin;
-  position: absolute;
+  position: fixed;
   left: 50%;
   top: 50%;
   transform: translate(0%, -50%);
   -webkit-user-select: none;
   user-select: none;
-  cursor: grab;
-}
-
-#image-track:active {
-  cursor: grabbing;
+  cursor: crosshair;
 }
 
 #image-track > .image {
@@ -38,11 +73,12 @@ body {
 }
 
 /* ── Desktop portrait mode: vertical column ─────────────────────────────────
-   JS switches to pixel-based Y scroll when orientation === "portrait".       */
+   JS switches to pixel-based Y scroll when orientation === "portrait".
+   top: 76px matches header height at py-5 + logo size-32 (20+32+20+1 = 73px). */
 @media (min-width: 769px) {
   #image-track.portrait {
     flex-direction: column;
-    top: 64px;
+    top: 80px;
     transform: translate(-50%, 0px);
   }
 
@@ -51,30 +87,11 @@ body {
   }
 }
 
-/* ── Mobile — vertical column layout ────────────────────────────────────────
-   Track starts just below the header (64px). JS uses pixel-based Y scroll
-   with a computed maxPx so the last image always ends at the bottom edge.   */
+/* ── Mobile — same horizontal layout as desktop, just smaller images ─────────
+   vmin = vw on a portrait phone so images are physically smaller than desktop. */
 @media (max-width: 768px) {
-  #image-track {
-    flex-direction: column;
-    gap: 4vw;
-    top: 150px;
-    transform: translate(-50%, 0px);
-  }
-
-  /* Default: landscape — 4:3 */
   #image-track > .image {
-    top: 50px;
-    width: 85vw;
-    height: 30vw; /* 90 × 3/4 ≈ 68 */
-    gap: 10vw;
-    object-position: center 100%;
-  }
-
-  /* Portrait mode — 3:4 */
-  #image-track.portrait > .image {
-    width: 85vw;
-    height: 30vw; 
-    gap: 10vw;
+    width: 52vmin;
+    height: 73vmin;
   }
 }

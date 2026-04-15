@@ -35,12 +35,15 @@ export default function ImageTrack({ photos, orientation }: ImageTrackProps) {
     isDown.current = false;
 
     const isMobile = window.innerWidth <= 768;
-    // Vertical mode: mobile always, or desktop when portrait is selected
-    const isVertical = isMobile || orientation === "portrait";
+    // Vertical only on desktop when portrait is selected — mobile is always horizontal
+    const isVertical = !isMobile && orientation === "portrait";
 
     // ── Vertical: pixel-based Y scroll (mobile + desktop portrait) ─────────
     if (isVertical) {
-      const HEADER_H = 64;
+      // Measure the real rendered header height instead of hardcoding
+      const HEADER_H = Math.ceil(
+        document.querySelector("header")?.getBoundingClientRect().height ?? 80
+      );
       const PAD = 16;
       const maxPx = Math.min(
         0,
@@ -52,12 +55,12 @@ export default function ImageTrack({ photos, orientation }: ImageTrackProps) {
         const progress = maxPx !== 0 ? px / maxPx : 0;
         track.animate(
           { transform: `translate(-50%, ${px}px)` },
-          { duration: 1200, fill: "forwards" }
+          { duration: 1800, fill: "forwards" }
         );
         for (const img of track.getElementsByClassName("image")) {
           (img as HTMLElement).animate(
             { objectPosition: `center ${progress * 100}%` },
-            { duration: 1200, fill: "forwards" }
+            { duration: 1800, fill: "forwards" }
           );
         }
       };
@@ -109,15 +112,16 @@ export default function ImageTrack({ photos, orientation }: ImageTrackProps) {
     }
 
     // ── Desktop: percentage-based horizontal scroll ─────────────────────────
+    const dur = isMobile ? 3200 : 1200;
     const animate = (next: number) => {
       track.animate(
         { transform: `translate(${next}%, -50%)` },
-        { duration: 1200, fill: "forwards" }
+        { duration: dur, fill: "forwards" }
       );
       for (const img of track.getElementsByClassName("image")) {
         (img as HTMLElement).animate(
           { objectPosition: `${100 + next}% center` },
-          { duration: 1200, fill: "forwards" }
+          { duration: dur, fill: "forwards" }
         );
       }
     };
@@ -129,14 +133,15 @@ export default function ImageTrack({ photos, orientation }: ImageTrackProps) {
     const handleMove = (x: number) => {
       if (!isDown.current) return;
       const delta = mouseDownAt.current - x;
-      const next = clamp(prevOffset.current + (delta / (window.innerWidth / 2)) * -100);
+      const divisor = isMobile ? window.innerWidth * 4 : window.innerWidth / 2;
+      const next = clamp(prevOffset.current + (delta / divisor) * -100);
       currentOffset.current = next;
       animate(next);
     };
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-      const next = clamp(currentOffset.current + delta * -0.08);
+      const next = clamp(currentOffset.current + delta * -0.04);
       currentOffset.current = next;
       prevOffset.current = next;
       animate(next);

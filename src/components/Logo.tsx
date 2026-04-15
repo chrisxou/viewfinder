@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react'
+
 interface LogoProps {
   size?: number
   className?: string
@@ -6,96 +8,52 @@ interface LogoProps {
 }
 
 export default function Logo({
-  size = 52,
+  size = 50,
   className = '',
   variant = 'full',
   theme = 'dark',
 }: LogoProps) {
   const color = theme === 'dark' ? '#ffffff' : '#0a0a0a'
-  const colorMuted = theme === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)'
+  const colorMuted = theme === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.4)'
+  const separatorBg = theme === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)'
+  const scale = size / 50
 
-  const markW = size * 1.35
-  const markH = size
-  const cx = markW * 0.39
-  const cy = markH * 0.5
-  const rOuter = markH * 0.345
-  const divX = markW * 0.74
-  const dotR = markH * 0.045
+  // All layout values come from CSS vars — avoids inline style warnings
+  const vars = {
+    '--logo-scale': scale,
+    '--logo-color': color,
+    '--logo-color-muted': colorMuted,
+    '--logo-sep-bg': separatorBg,
+  } as CSSProperties
 
-  const totalWidth = variant === 'full' ? markW + size * 4.2 : markW
+  const markW = 66 * scale
+  const markH = 50 * scale
+
+  const mark = (
+    <svg width={markW} height={markH} viewBox="0 0 66 50" fill="none" aria-hidden="true">
+      <rect x="0.5" y="0.5" width="65" height="49" stroke={color} strokeWidth="0.75" />
+      <circle cx="26" cy="25" r="17" fill="none" stroke={color} strokeWidth="0.75" />
+      <line x1="48" y1="0" x2="48" y2="50" stroke={color} strokeWidth="0.4" opacity="0.5" />
+      <circle cx="26" cy="25" r="2.3" fill={color} />
+    </svg>
+  )
+
+  if (variant === 'mark-only') {
+    return (
+      <span className={className} role="img" aria-label="Veil">
+        {mark}
+      </span>
+    )
+  }
 
   return (
-    <svg
-      width={totalWidth}
-      height={markH}
-      viewBox={`0 0 ${totalWidth} ${markH}`}
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      role="img"
-      aria-label="Veil — Photo · Video"
-    >
-      {/* Outer frame */}
-      <rect
-        x="0.5"
-        y="0.5"
-        width={markW - 1}
-        height={markH - 1}
-        stroke={color}
-        strokeWidth="0.75"
-      />
-
-      {/* Lens circle */}
-      <circle cx={cx} cy={cy} r={rOuter} stroke={color} strokeWidth="0.75" />
-
-      {/* Golden-ratio divider line */}
-      <line x1={divX} y1="0" x2={divX} y2={markH} stroke={color} strokeWidth="0.4" opacity="0.5" />
-
-      {/* Center dot */}
-      <circle cx={cx} cy={cy} r={dotR} fill={color} />
-
-      {variant === 'full' && (
-        <>
-          {/* Separator */}
-          <line
-            x1={markW + size * 0.28}
-            y1={markH * 0.18}
-            x2={markW + size * 0.28}
-            y2={markH * 0.82}
-            stroke={color}
-            strokeWidth="0.4"
-            opacity="0.2"
-          />
-
-          {/* VEIL wordmark — centred slightly above mid to leave room for subtitle */}
-          <text
-            x={markW + size * 0.52}
-            y={markH * 0.38}
-            fontFamily="'DM Sans', system-ui, sans-serif"
-            fontSize={size * 0.56}
-            fontWeight="200"
-            letterSpacing={size * 0.1}
-            fill={color}
-            dominantBaseline="middle"
-          >
-            VEIL
-          </text>
-
-          {/* PHOTO · VIDEO subtitle — aligned to VEIL left edge, correct spacing */}
-          <text
-            x={markW + size * 0.52}
-            y={markH * 0.79}
-            fontFamily="'DM Sans', system-ui, sans-serif"
-            fontSize={size * 0.14}
-            fontWeight="200"
-            letterSpacing={size * 0.05}
-            fill={colorMuted}
-            dominantBaseline="middle"
-          >
-            PHOTO · VIDEO
-          </text>
-        </>
-      )}
-    </svg>
+    <span className={`logo ${className}`} style={vars} role="img" aria-label="Veil — Photo · Video">
+      {mark}
+      <span className="logo__sep" />
+      <span className="logo__text">
+        <span className="logo__name">VEIL</span>
+        <span className="logo__sub">PHOTO · VIDEO</span>
+      </span>
+    </span>
   )
 }

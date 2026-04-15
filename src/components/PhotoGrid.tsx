@@ -6,7 +6,10 @@ import ImageCard from "./ImageCard";
 import Lightbox from "./Lightbox";
 
 export default function PhotoGrid({ photos }: { photos: Photo[] }) {
-  const [selected, setSelected] = useState<Photo | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  const handlePrev = () => setSelectedIndex((i) => (i !== null ? Math.max(0, i - 1) : null));
+  const handleNext = () => setSelectedIndex((i) => (i !== null ? Math.min(photos.length - 1, i + 1) : null));
 
   return (
     <>
@@ -15,15 +18,20 @@ export default function PhotoGrid({ photos }: { photos: Photo[] }) {
           <div
             key={photo.id}
             className="cursor-pointer"
-            onClick={() => setSelected(photo)}
+            onClick={() => setSelectedIndex(index)}
           >
             <ImageCard src={photo.url} alt={photo.alt} priority={index < 6} />
           </div>
         ))}
       </div>
 
-      {selected && (
-        <Lightbox photo={selected} onClose={() => setSelected(null)} />
+      {selectedIndex !== null && (
+        <Lightbox
+          photo={photos[selectedIndex]}
+          onClose={() => setSelectedIndex(null)}
+          onPrev={selectedIndex > 0 ? handlePrev : undefined}
+          onNext={selectedIndex < photos.length - 1 ? handleNext : undefined}
+        />
       )}
     </>
   );
